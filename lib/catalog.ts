@@ -1,0 +1,381 @@
+export interface PersonPreset {
+  id: string;
+  name: string;
+  genderCategory: 'homem' | 'mulher' | 'crianca';
+  ageGroup: string;
+  image: string;
+  description: string;
+  tagline: string;
+}
+
+export interface ClothingItem {
+  id: string;
+  name: string;
+  category: 'homem' | 'mulher' | 'crianca' | 'unissex';
+  type: 'superior' | 'inferior' | 'completo' | 'calcado' | 'acessorio';
+  typeName: string;
+  color: string;
+  colorHex: string;
+  description: string;
+  fabric: string;
+  style: string;
+  iconName: string;
+  imageUrl?: string;
+  badge?: string;
+}
+
+export interface AngleOption {
+  id: 'frente' | 'perfil' | 'tres_quartos' | 'costas';
+  label: string;
+  description: string;
+  degrees: string;
+  icon: string;
+}
+
+export const ANGLE_OPTIONS: AngleOption[] = [
+  {
+    id: 'frente',
+    label: 'Frente',
+    description: 'Vista frontal direta, caimento do peito, botões e gola',
+    degrees: '0°',
+    icon: 'Maximize2',
+  },
+  {
+    id: 'tres_quartos',
+    label: 'Três Quartos',
+    description: 'Perspectiva diagonal elegante de editorial de moda',
+    degrees: '45°',
+    icon: 'Compass',
+  },
+  {
+    id: 'perfil',
+    label: 'Perfil',
+    description: 'Vista lateral, alinhamento de costuras e caimento do corpo',
+    degrees: '90°',
+    icon: 'MoveHorizontal',
+  },
+  {
+    id: 'costas',
+    label: 'Costas',
+    description: 'Vista traseira, recorte dorsal, ombros e comprimento',
+    degrees: '180°',
+    icon: 'RotateCcw',
+  },
+];
+
+export const PERSON_PRESETS: PersonPreset[] = [
+  {
+    id: 'homem_alexandre',
+    name: 'Alexandre (Homem)',
+    genderCategory: 'homem',
+    ageGroup: 'Adulto (28 anos)',
+    image: '/api/assets/trocaroupa_man_model_1792860574783.jpg',
+    description: 'Biotipo atlético médio, 1.82m, postura ereta de estúdio fotográfico.',
+    tagline: 'Ideal para ternos, alfaiataria, moda casual e esportiva',
+  },
+  {
+    id: 'mulher_beatriz',
+    name: 'Beatriz (Mulher)',
+    genderCategory: 'mulher',
+    ageGroup: 'Adulta (26 anos)',
+    image: '/api/assets/trocaroupa_woman_model_1792860576019.jpg',
+    description: 'Biotipo padrão elegante, 1.70m, cabelo ondulado natural, postura de editorial.',
+    tagline: 'Ideal para vestidos, blazers, conjuntos fluidos e acessórios',
+  },
+  {
+    id: 'crianca_lucas',
+    name: 'Lucas (Criança)',
+    genderCategory: 'crianca',
+    ageGroup: 'Infantil (7 anos)',
+    image: '/api/assets/trocaroupa_kid_model_1792860576868.jpg',
+    description: 'Biotipo infantil ativo, 1.25m, sorriso alegre, ótimo para roupas infantis.',
+    tagline: 'Ideal para roupas infantis, conjuntos confortáveis, fantasias e passeios',
+  },
+];
+
+export const CLOTHING_CATALOG: ClothingItem[] = [
+  // --- HOMENS ---
+  {
+    id: 'man_terno_navy',
+    name: 'Terno Italiano Slim Fit Navy',
+    category: 'homem',
+    type: 'completo',
+    typeName: 'Conjunto Alfaiataria',
+    color: 'Azul Marinho Profundo',
+    colorHex: '#1b2a47',
+    description: 'Paletó com lapela notched de 2 botões, camisa social branca de algodão egípcio e calça de corte alfaiataria italiana.',
+    fabric: 'Lã Fria Super 120 e Algodão',
+    style: 'Executivo & Gala',
+    iconName: 'Briefcase',
+    badge: 'Mais pedido',
+  },
+  {
+    id: 'man_camisa_linho',
+    name: 'Camisa de Linho Puro Areia & Calça Chino',
+    category: 'homem',
+    type: 'completo',
+    typeName: 'Look Casual Chic',
+    color: 'Areia / Cáqui',
+    colorHex: '#d8c29d',
+    description: 'Camisa de linho leve com mangas dobradas, corte solto respirável e calça chino bege elegante com corte tapered.',
+    fabric: 'Linho 100% natural',
+    style: 'Casual Sofisticado',
+    iconName: 'SunMedium',
+  },
+  {
+    id: 'man_jaqueta_couro',
+    name: 'Jaqueta Biker de Couro Preto',
+    category: 'homem',
+    type: 'superior',
+    typeName: 'Jaqueta / Casaco',
+    color: 'Preto Fosco',
+    colorHex: '#18181b',
+    description: 'Jaqueta clássica estilo motoqueiro com zíperes metálicos prateados, gola com botão de pressão e forro acolchoado acetinado.',
+    fabric: 'Couro Premium ecológico macio',
+    style: 'Street & Rocker',
+    iconName: 'Shield',
+    badge: 'Tendência',
+  },
+  {
+    id: 'man_hoodie_streetwear',
+    name: 'Moletom Hoodie Streetwear Oversized',
+    category: 'homem',
+    type: 'superior',
+    typeName: 'Moletom',
+    color: 'Cinza Mescla Chumbo',
+    colorHex: '#475569',
+    description: 'Moletom unissex pesado com bolso canguru, capuz duplo estruturado e punhos canelados largos.',
+    fabric: 'Algodão Penteado Felpado 3 cabos',
+    style: 'Streetwear Moderno',
+    iconName: 'Sparkles',
+  },
+  {
+    id: 'man_calca_jeans_selvedge',
+    name: 'Calça Jeans Selvedge Raw Denim',
+    category: 'homem',
+    type: 'inferior',
+    typeName: 'Calça Jeans',
+    color: 'Azul Índigo Escuro',
+    colorHex: '#1e3a8a',
+    description: 'Jeans estruturado com costuras em linha ocre, barra dobrada sutil e lavagem premium sem desgaste.',
+    fabric: 'Denim Japonês 14oz 100% algodão',
+    style: 'Urbano Atemporal',
+    iconName: 'Layers',
+  },
+  {
+    id: 'man_oculos_aviador',
+    name: 'Óculos de Sol Aviador Clássico Dourado',
+    category: 'homem',
+    type: 'acessorio',
+    typeName: 'Acessório',
+    color: 'Armação Ouro com Lente Verde G-15',
+    colorHex: '#eab308',
+    description: 'Armação metálica dourada ultra-leve com lentes polarizadas e ponte dupla elegante.',
+    fabric: 'Metal titânio banhado a ouro',
+    style: 'Acessório de Destaque',
+    iconName: 'Glasses',
+  },
+  {
+    id: 'man_relogio_aco',
+    name: 'Relógio Cronógrafo Aço Inox Prateado',
+    category: 'homem',
+    type: 'acessorio',
+    typeName: 'Acessório',
+    color: 'Prateado Escovado com Mostrador Preto',
+    colorHex: '#94a3b8',
+    description: 'Relógio de pulso executivo com pulseira de elos em aço inoxidável e bisel cerâmico.',
+    fabric: 'Aço Cirúrgico 316L',
+    style: 'Luxo Clássico',
+    iconName: 'Watch',
+  },
+  {
+    id: 'man_tenis_minimalista',
+    name: 'Tênis de Couro Branco Minimalista',
+    category: 'homem',
+    type: 'calcado',
+    typeName: 'Calçado',
+    color: 'Branco Puro',
+    colorHex: '#f8fafc',
+    description: 'Tênis low-top clean com solado vulcanizado de borracha costurada e cadarço encerado.',
+    fabric: 'Couro bovino macio e borracha',
+    style: 'Casual Versátil',
+    iconName: 'Footprints',
+  },
+
+  // --- MULHERES ---
+  {
+    id: 'woman_vestido_floral',
+    name: 'Vestido Midi Fluido Primavera',
+    category: 'mulher',
+    type: 'completo',
+    typeName: 'Vestido Midi',
+    color: 'Bordô com Estampa Botânica Delicada',
+    colorHex: '#881337',
+    description: 'Vestido com decote em V sutil, mangas bufantes fluidas, cintura ajustada com faixa e saia evasê esvoaçante.',
+    fabric: 'Seda Mista & Viscose de Alta Densidade',
+    style: 'Romântico & Confortável',
+    iconName: 'Heart',
+    badge: 'Queridinho',
+  },
+  {
+    id: 'woman_terninho_terracota',
+    name: 'Blazer Estruturado & Calça Pantalona',
+    category: 'mulher',
+    type: 'completo',
+    typeName: 'Tailleur Moderno',
+    color: 'Terracota Queimado',
+    colorHex: '#c2410c',
+    description: 'Blazer alongado com ombros estruturados, lapela chanfrada e calça pantalona de cintura alta com caimento fluido.',
+    fabric: 'Crepe de Alfaiataria Nobre',
+    style: 'Chic Contemporâneo',
+    iconName: 'Gem',
+    badge: 'Alta Costura',
+  },
+  {
+    id: 'woman_vestido_gala_preto',
+    name: 'Vestido de Gala Noite Longo Preto',
+    category: 'mulher',
+    type: 'completo',
+    typeName: 'Vestido de Festa',
+    color: 'Preto Noir Acetinado',
+    colorHex: '#09090b',
+    description: 'Vestido longo de caimento sereia suave com decote drapeado e acabamento brilhante que reflete a iluminação noturna.',
+    fabric: 'Cetim Duchesse Encorpado',
+    style: 'Black Tie & Gala',
+    iconName: 'Sparkle',
+  },
+  {
+    id: 'woman_jaqueta_jeans',
+    name: 'Jaqueta Jeans Oversized Customizada',
+    category: 'mulher',
+    type: 'superior',
+    typeName: 'Jaqueta',
+    color: 'Azul Claro Vintage Stone Wash',
+    colorHex: '#38bdf8',
+    description: 'Jaqueta jeans com caimento boyfriend despojado, gola macia, botões de cobre e punhos desfiados artesanalmente.',
+    fabric: 'Denim 100% Algodão sustentável',
+    style: 'Casual Urbano',
+    iconName: 'Shirt',
+  },
+  {
+    id: 'woman_bolsa_couro',
+    name: 'Bolsa Baguette Transversal em Couro',
+    category: 'mulher',
+    type: 'acessorio',
+    typeName: 'Bolsa / Acessório',
+    color: 'Caramelo Conhaque',
+    colorHex: '#b45309',
+    description: 'Bolsa compacta geométrica com alça de corrente dourada removível e fecho magnético.',
+    fabric: 'Couro vegetal trabalhado',
+    style: 'Elegância Prática',
+    iconName: 'ShoppingBag',
+  },
+  {
+    id: 'woman_oculos_gatinho',
+    name: 'Óculos de Sol Estilo Cat-Eye Tartaruga',
+    category: 'mulher',
+    type: 'acessorio',
+    typeName: 'Acessório',
+    color: 'Acetato Tartaruga Âmbar',
+    colorHex: '#78350f',
+    description: 'Armação levemente pontiaguda que levanta o olhar com lentes degradê marrom com proteção UV400.',
+    fabric: 'Acetato Italiano Mazzucchelli',
+    style: 'Glamour Retrô',
+    iconName: 'Glasses',
+  },
+  {
+    id: 'woman_sandalia_salto',
+    name: 'Sandália de Tiras Finas Salto Bloco',
+    category: 'mulher',
+    type: 'calcado',
+    typeName: 'Calçado',
+    color: 'Dourado Champanhe Metálico',
+    colorHex: '#fef08a',
+    description: 'Sandália confortável com tiras cruzadas no peito do pé e salto bloco de 6cm para estabilidade.',
+    fabric: 'Couro pelica macio metalizado',
+    style: 'Festa & Dia a Dia',
+    iconName: 'Sparkles',
+  },
+
+  // --- CRIANÇAS ---
+  {
+    id: 'kid_macacao_divertido',
+    name: 'Macacão Salopete Jeans com T-shirt Listrada',
+    category: 'crianca',
+    type: 'completo',
+    typeName: 'Conjunto Infantil',
+    color: 'Jeans Azul Claro & Listras Vermelhas e Brancas',
+    colorHex: '#2563eb',
+    description: 'Jardineira em jeans macio com alças reguláveis e botões de pressão, sobre camiseta de algodão antialérgica.',
+    fabric: 'Algodão Orgânico 100% e Jeans Confort',
+    style: 'Brincadeira & Passeio',
+    iconName: 'Smile',
+    badge: 'Super Confortável',
+  },
+  {
+    id: 'kid_vestido_girassol',
+    name: 'Vestidinho Infantil Rodado Floral & Faixa',
+    category: 'crianca',
+    type: 'completo',
+    typeName: 'Vestido Infantil',
+    color: 'Amarelo Girassol e Branco',
+    colorHex: '#f59e0b',
+    description: 'Vestido fofo com forro de algodão macio, babadinhos nos ombros e cinto de laço delicado atrás.',
+    fabric: 'Tricoline 100% Algodão Toque de Pêssego',
+    style: 'Festinhas & Família',
+    iconName: 'Sun',
+  },
+  {
+    id: 'kid_conjunto_aventura',
+    name: 'Conjunto Aventura Safari Camuflado',
+    category: 'crianca',
+    type: 'completo',
+    typeName: 'Conjunto Passeio',
+    color: 'Verde Militar & Bege Cáqui',
+    colorHex: '#15803d',
+    description: 'Camiseta estampada com animais exploradores e bermuda cargo com elástico reforçado no cós para liberdade de movimento.',
+    fabric: 'Malha Penteada Respirável',
+    style: 'Aventura ao Ar Livre',
+    iconName: 'Compass',
+  },
+  {
+    id: 'kid_moletom_dinossauro',
+    name: 'Moletom com Capuz com Cristas Divertidas',
+    category: 'crianca',
+    type: 'superior',
+    typeName: 'Casaco Infantil',
+    color: 'Azul Turquesa com detalhes Verde Lima',
+    colorHex: '#0891b2',
+    description: 'Moletom quentinho com capuz decorado com cristas macias de feltro e punhos elásticos que não apertam.',
+    fabric: 'Moletom 100% Algodão com felpa suave',
+    style: 'Divertido & Quentinho',
+    iconName: 'Sparkles',
+    badge: 'Favorito dos Pequenos',
+  },
+  {
+    id: 'kid_bone_snapback',
+    name: 'Boné Infantil Snapback Bordado',
+    category: 'crianca',
+    type: 'acessorio',
+    typeName: 'Acessório',
+    color: 'Vermelho & Azul Marinho',
+    colorHex: '#dc2626',
+    description: 'Boné com aba curva de proteção solar e fecho ajustável de silicone super macio na parte de trás.',
+    fabric: 'Sarja de Algodão respirável',
+    style: 'Proteção Solar com Estilo',
+    iconName: 'Crown',
+  },
+  {
+    id: 'kid_tenis_luzes',
+    name: 'Tênis Infantil com Fecho de Velcro',
+    category: 'crianca',
+    type: 'calcado',
+    typeName: 'Calçado Infantil',
+    color: 'Azul Elétrico com Detalhes Laranja',
+    colorHex: '#3b82f6',
+    description: 'Tênis anatômico com palmilha fofa, fechamento duplo de velcro fácil para a criança calçar sozinha e solado antiderrapante.',
+    fabric: 'Mesh respirável e borracha flexível',
+    style: 'Prático e Seguro',
+    iconName: 'Footprints',
+  },
+];

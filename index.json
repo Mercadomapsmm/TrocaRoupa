@@ -1,0 +1,156 @@
+{
+  "name": "TrocaRoupa",
+  "version": "1.0.0",
+  "description": "Provador virtual inteligente que troca roupas em pessoas reais com caimento realista e visualização em múltiplos ângulos com IA.",
+  "language": "pt-BR",
+  "author": "TrocaRoupa Studio",
+  "categories": [
+    "homem",
+    "mulher",
+    "crianca"
+  ],
+  "angles": [
+    {
+      "id": "frente",
+      "label": "Frente",
+      "degrees": "0°",
+      "description": "Vista frontal completa com foco no decote, gola, peito e caimento da cintura."
+    },
+    {
+      "id": "tres_quartos",
+      "label": "Três Quartos",
+      "degrees": "45°",
+      "description": "Perspectiva diagonal dinâmica de catálogo valorizando volume e profundidade."
+    },
+    {
+      "id": "perfil",
+      "label": "Perfil / Lado",
+      "degrees": "90°",
+      "description": "Vista lateral com foco no alinhamento anatômico da coluna e projeção do tecido."
+    },
+    {
+      "id": "costas",
+      "label": "Costas",
+      "degrees": "180°",
+      "description": "Vista traseira com recorte dorsal, ombros estruturados e comprimento correto."
+    }
+  ],
+  "presetPeople": [
+    {
+      "id": "homem_padrao",
+      "name": "Alexandre (Homem)",
+      "category": "homem",
+      "image": "/api/assets/trocaroupa_man_model_1792860574783.jpg",
+      "description": "Modelo adulto em pose neutra de estúdio com iluminação suave."
+    },
+    {
+      "id": "mulher_padrao",
+      "name": "Beatriz (Mulher)",
+      "category": "mulher",
+      "image": "/api/assets/trocaroupa_woman_model_1792860576019.jpg",
+      "description": "Modelo adulta feminina em pose elegante para vestidos e conjuntos."
+    },
+    {
+      "id": "crianca_padrao",
+      "name": "Lucas (Criança)",
+      "category": "crianca",
+      "image": "/api/assets/trocaroupa_kid_model_1792860576868.jpg",
+      "description": "Criança alegre em pose frontal ideal para roupas infantis."
+    }
+  ],
+  "catalog": {
+    "homem": [
+      {
+        "id": "terno_navy",
+        "name": "Terno Slim Fit Azul Marinho",
+        "type": "completo",
+        "colorHex": "#1b2a47",
+        "fabric": "Lã fria Super 120 e camisa de algodão egípcio",
+        "style": "Executivo & Gala"
+      },
+      {
+        "id": "camisa_linho",
+        "name": "Camisa de Linho Areia com Calça Chino",
+        "type": "completo",
+        "colorHex": "#cbb390",
+        "fabric": "Linho puro 100%",
+        "style": "Casual Chic"
+      },
+      {
+        "id": "jaqueta_couro",
+        "name": "Jaqueta Biker de Couro Preto",
+        "type": "superior",
+        "colorHex": "#18181b",
+        "fabric": "Couro ecológico macio",
+        "style": "Street Urbano"
+      }
+    ],
+    "mulher": [
+      {
+        "id": "vestido_vermelho",
+        "name": "Vestido Midi Vermelho de Seda Fluida",
+        "type": "completo",
+        "colorHex": "#991b1b",
+        "fabric": "Seda pura acetinada",
+        "style": "Elegância & Noite"
+      },
+      {
+        "id": "conjunto_terracota",
+        "name": "Blazer e Pantalona Alfaiataria Terracota",
+        "type": "completo",
+        "colorHex": "#c2410c",
+        "fabric": "Crepe encorpado",
+        "style": "Executivo Moderno"
+      },
+      {
+        "id": "vestido_floral",
+        "name": "Vestido Esvoaçante Estampa Floral",
+        "type": "completo",
+        "colorHex": "#be185d",
+        "fabric": "Viscose leve de alta densidade",
+        "style": "Primavera & Passeio"
+      }
+    ],
+    "crianca": [
+      {
+        "id": "infantil_dinossauro",
+        "name": "Conjunto Moletom Infantil com Capuz de Dinossauro",
+        "type": "completo",
+        "colorHex": "#0891b2",
+        "fabric": "Algodão 100% antialérgico",
+        "style": "Divertido & Confortável"
+      },
+      {
+        "id": "vestidinho_girassol",
+        "name": "Vestidinho Amarelo Floral Rodado",
+        "type": "completo",
+        "colorHex": "#d97706",
+        "fabric": "Tricoline de algodão suave",
+        "style": "Festa em Família"
+      },
+      {
+        "id": "macacao_jeans_infantil",
+        "name": "Jardineira Jeans com Camiseta Listrada",
+        "type": "completo",
+        "colorHex": "#2563eb",
+        "fabric": "Denim confort flexível",
+        "style": "Brincadeira & Aventura"
+      }
+    ]
+  },
+  "quickSuggestions": [
+    "Terno Slim Fit Azul Marinho com Camisa Branca",
+    "Vestido Midi Vermelho Elegante de Seda",
+    "Jaqueta Biker de Couro Preto com Camiseta",
+    "Camisa de Linho Bege e Calça Branca",
+    "Conjunto Infantil Colorido com Moletom de Dinossauro",
+    "Blazer Branco e Calça Jeans Clara",
+    "Vestido Longo Preto de Festa Noite"
+  ],
+  "api": {
+    "tryonEndpoint": "/api/virtual-tryon",
+    "method": "POST",
+    "supportedFormats": ["image/jpeg", "image/png", "image/webp"],
+    "maxFileSizeMB": 10
+  }
+}

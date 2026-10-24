@@ -1,0 +1,6 @@
+{
+  "name": "TrocaRoupa",
+  "description": "Provador virtual inteligente que veste roupas e acessórios realistas em pessoas reais para homens, mulheres e crianças em múltiplos ângulos com inteligência artificial.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

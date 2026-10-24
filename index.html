@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrocaRoupa - Provador Virtual Simples com IA</title>
+  <meta name="description" content="Troque a roupa de uma pessoa informada de forma simples e rápida com inteligência artificial em múltiplos ângulos.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    .animate-pulse-slow {
+      animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen antialiased flex flex-col justify-between">
+  <!-- Barra Superior -->
+  <header class="border-b border-gray-800 bg-gray-900 bg-opacity-80 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-yellow-500 flex items-center justify-center text-white font-extrabold shadow-md">
+          TR
+        </div>
+        <div>
+          <h1 class="text-lg font-black tracking-tight text-white flex items-center">
+            Troca<span class="text-yellow-400">Roupa</span>
+          </h1>
+          <p class="text-[10px] text-gray-400">Provador Virtual Simples com IA</p>
+        </div>
+      </div>
+      <span class="text-xs bg-gray-800 text-yellow-400 font-semibold px-3 py-1 rounded-full border border-gray-700">
+        Múltiplos Ângulos 360°
+      </span>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="max-w-4xl mx-auto px-4 py-6 w-full space-y-6">
+    <!-- Instrução Direta -->
+    <div class="text-center max-w-xl mx-auto">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
+        Troque a Roupa de Qualquer Foto
+      </h2>
+      <p class="text-xs text-gray-400 mt-1">
+        Escolha uma pessoa, informe a roupa desejada e veja o resultado em 4 ângulos diferentes.
+      </p>
+    </div>
+
+    <!-- 2 Passos Lado a Lado -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <!-- Passo 1: Pessoa -->
+      <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 space-y-3 flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center space-x-2">
+              <span class="bg-yellow-400 text-gray-950 rounded-full h-6 w-6 flex items-center justify-center text-xs font-black">1</span>
+              <span>Foto da Pessoa</span>
+            </h3>
+            <span id="personCategoryBadge" class="text-[11px] bg-gray-800 px-2 py-0.5 rounded text-gray-300 uppercase font-semibold">HOMEM</span>
+          </div>
+
+          <!-- Preview da Imagem -->
+          <div class="relative aspect-w-3 aspect-h-4 h-64 w-full rounded-xl overflow-hidden bg-black border border-gray-800 flex items-center justify-center">
+            <img id="personPreview" src="/api/assets/trocaroupa_man_model_1792860574783.jpg" alt="Pessoa" class="h-full w-full object-cover">
+          </div>
+
+          <!-- Botões de Ação para Pessoa -->
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="uploadPersonBtn" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold py-2.5 px-3 rounded-xl border border-gray-700 transition">
+              📁 Enviar Foto
+            </button>
+            <input type="file" id="personFileInput" accept="image/*" class="hidden">
+
+            <button type="button" id="cameraBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2.5 px-3 rounded-xl transition shadow-md">
+              📷 Tirar Foto
+            </button>
+          </div>
+        </div>
+
+        <!-- Modelos de Exemplo Rápidos -->
+        <div class="pt-3 border-t border-gray-800">
+          <p class="text-[11px] text-gray-400 mb-2">Ou escolha um modelo pronto:</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" class="example-person-btn py-1.5 px-2 rounded-lg text-xs font-medium border border-gray-700 bg-gray-800 text-gray-200 hover:border-yellow-400" data-src="/api/assets/trocaroupa_man_model_1792860574783.jpg" data-cat="homem">
+              Homem
+            </button>
+            <button type="button" class="example-person-btn py-1.5 px-2 rounded-lg text-xs font-medium border border-gray-700 bg-gray-800 text-gray-200 hover:border-yellow-400" data-src="/api/assets/trocaroupa_woman_model_1792860576019.jpg" data-cat="mulher">
+              Mulher
+            </button>
+            <button type="button" class="example-person-btn py-1.5 px-2 rounded-lg text-xs font-medium border border-gray-700 bg-gray-800 text-gray-200 hover:border-yellow-400" data-src="/api/assets/trocaroupa_kid_model_1792860576868.jpg" data-cat="crianca">
+              Criança
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Passo 2: Roupa -->
+      <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 space-y-3 flex flex-col justify-between">
+        <div class="space-y-3">
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <span class="bg-yellow-400 text-gray-950 rounded-full h-6 w-6 flex items-center justify-center text-xs font-black">2</span>
+            <span>Roupa Desejada</span>
+          </h3>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-300 mb-1">
+              Descreva a roupa ou estilo que deseja:
+            </label>
+            <input type="text" id="clothingDescInput" value="Terno Slim Fit Azul Marinho com Camisa Branca" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:border-yellow-400 focus:outline-none" placeholder="Ex: Terno azul marinho, Vestido floral vermelho, Jaqueta de couro...">
+          </div>
+
+          <!-- Sugestões Rápidas -->
+          <div>
+            <p class="text-[11px] text-gray-400 mb-1.5">Sugestões rápidas para clicar:</p>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="sug-btn text-[11px] bg-gray-800 hover:bg-yellow-500 hover:text-black px-2.5 py-1 rounded-md text-gray-300 border border-gray-700" data-text="Terno Slim Fit Azul Marinho com Camisa Branca">Terno Azul</button>
+              <button type="button" class="sug-btn text-[11px] bg-gray-800 hover:bg-yellow-500 hover:text-black px-2.5 py-1 rounded-md text-gray-300 border border-gray-700" data-text="Vestido Midi Vermelho Elegante de Seda">Vestido Vermelho</button>
+              <button type="button" class="sug-btn text-[11px] bg-gray-800 hover:bg-yellow-500 hover:text-black px-2.5 py-1 rounded-md text-gray-300 border border-gray-700" data-text="Jaqueta Biker de Couro Preto com Camiseta">Jaqueta de Couro</button>
+              <button type="button" class="sug-btn text-[11px] bg-gray-800 hover:bg-yellow-500 hover:text-black px-2.5 py-1 rounded-md text-gray-300 border border-gray-700" data-text="Camisa de Linho Bege e Calça Branca">Linho Casual</button>
+              <button type="button" class="sug-btn text-[11px] bg-gray-800 hover:bg-yellow-500 hover:text-black px-2.5 py-1 rounded-md text-gray-300 border border-gray-700" data-text="Conjunto Infantil Colorido com Moletom de Dinossauro">Infantil Divertido</button>
+            </div>
+          </div>
+
+          <!-- Foto da Roupa Opcional -->
+          <div class="pt-2">
+            <button type="button" id="uploadGarmentBtn" class="text-xs text-indigo-400 hover:text-indigo-300 underline flex items-center space-x-1">
+              <span>📷 Anexar foto de uma roupa real (opcional)</span>
+            </button>
+            <input type="file" id="garmentFileInput" accept="image/*" class="hidden">
+          </div>
+        </div>
+
+        <!-- Botão Principal de Troca -->
+        <div class="pt-3 border-t border-gray-800">
+          <button id="swapBtn" type="button" class="w-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 hover:from-yellow-300 hover:to-yellow-500 text-gray-950 font-black py-3 px-6 rounded-xl text-sm sm:text-base shadow-xl transition transform active:scale-95 flex items-center justify-center space-x-2">
+            <span id="swapBtnText">Trocar Roupa Agora</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Área de Visualização com Múltiplos Ângulos -->
+    <div id="resultArea" class="bg-gray-900 p-6 rounded-3xl border border-gray-800 space-y-5 shadow-2xl">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-gray-800 pb-4">
+        <div>
+          <span class="text-xs bg-green-500 bg-opacity-20 text-green-400 px-2.5 py-0.5 rounded-full font-bold border border-green-500 border-opacity-30">
+            ✓ Roupa Ajustada no Corpo
+          </span>
+          <h3 class="text-lg font-bold text-white mt-1">Veja a Pessoa em Vários Ângulos</h3>
+        </div>
+
+        <!-- Botões de Ângulos -->
+        <div class="flex items-center space-x-1 bg-gray-950 p-1 rounded-xl border border-gray-800">
+          <button class="angle-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-yellow-400 text-gray-950" data-angle="frente">Frente (0°)</button>
+          <button class="angle-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-white" data-angle="tres_quartos">3/4 (45°)</button>
+          <button class="angle-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-white" data-angle="perfil">Perfil (90°)</button>
+          <button class="angle-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-white" data-angle="costas">Costas (180°)</button>
+        </div>
+      </div>
+
+      <!-- Foto Renderizada + Botão de Comparação -->
+      <div class="max-w-md mx-auto relative rounded-2xl overflow-hidden bg-black shadow-2xl aspect-w-3 aspect-h-4">
+        <img id="resultImage" src="/api/assets/trocaroupa_man_model_1792860574783.jpg" alt="Resultado" class="w-full h-full object-cover">
+
+        <div class="absolute bottom-3 left-3 bg-black bg-opacity-75 text-white text-xs font-bold px-3 py-1 rounded-lg border border-gray-700" id="angleBadge">
+          Vista Frontal (0°)
+        </div>
+
+        <!-- Botão Segurar para Ver Antes -->
+        <button id="toggleCompareBtn" class="absolute top-3 right-3 bg-black bg-opacity-80 hover:bg-black text-yellow-400 text-xs font-bold px-3 py-1.5 rounded-xl border border-yellow-400 border-opacity-40 backdrop-blur-md select-none transition">
+          👁 Segurar para Ver Antes
+        </button>
+      </div>
+
+      <!-- Parecer do Caimento -->
+      <p id="stylistNotes" class="text-center text-xs text-gray-400 bg-gray-950 p-3 rounded-xl border border-gray-800 max-w-lg mx-auto">
+        Caimento anatômico sob medida com simetria de ombros e drapeado realista de tecido.
+      </p>
+
+      <!-- Botão de Download -->
+      <div class="flex justify-center pt-2">
+        <button id="downloadBtn" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl border border-gray-700 transition flex items-center space-x-2">
+          <span>⬇ Baixar Foto do Look</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal de Câmera Direta no HTML -->
+  <div id="cameraModal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden max-w-md w-full p-4 space-y-4">
+      <div class="flex items-center justify-between">
+        <h4 class="text-sm font-bold text-white">Câmera ao Vivo</h4>
+        <button id="closeCameraBtn" class="text-gray-400 hover:text-white text-lg">✕</button>
+      </div>
+      <div class="relative bg-black rounded-xl overflow-hidden h-64 flex items-center justify-center">
+        <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover"></video>
+      </div>
+      <div class="flex justify-center">
+        <button id="captureShutterBtn" class="bg-yellow-400 hover:bg-yellow-500 text-gray-950 font-bold px-6 py-2.5 rounded-xl text-xs">
+          Capturar Foto Agora
+        </button>
+      </div>
+      <canvas id="cameraCanvas" class="hidden"></canvas>
+    </div>
+  </div>
+
+  <!-- Rodapé Simples -->
+  <footer class="border-t border-gray-900 py-4 text-center text-xs text-gray-500">
+    TrocaRoupa • Provador Virtual Simples com Inteligência Artificial
+  </footer>
+
+  <script src="./index.js"></script>
+</body>
+</html>
