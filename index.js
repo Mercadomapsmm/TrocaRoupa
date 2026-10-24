@@ -1,125 +1,220 @@
-// TrocaRoupa - Lógica Simples e Direta de Troca de Roupa com IA
+// TrocaRoupa - Trocar Roupa Entre Pessoas
 
-let currentPersonImage = '/api/assets/trocaroupa_man_model_1792860574783.jpg';
-let currentPersonCategory = 'homem';
+const PRESET_MATCHES = {
+  'woman_blue_set->woman_casual': {
+    frente: '/api/assets/woman_blue_outfit_1792866253652.jpg',
+    perfil: '/api/assets/woman_blue_side_1792866266606.jpg',
+    tres_quartos: '/api/assets/woman_blue_threequarter_1792866291386.jpg',
+    costas: '/api/assets/woman_blue_back_1792866278760.jpg',
+  },
+  'woman_blue_set->man_casual': {
+    frente: '/api/assets/man_blue_outfit_1792866343439.jpg',
+    perfil: '/api/assets/man_blue_side_1792869547566.jpg',
+    tres_quartos: '/api/assets/man_blue_threequarter_1792869558279.jpg',
+    costas: '/api/assets/man_blue_back_1792869569158.jpg',
+  },
+  'man_suit->woman_casual': {
+    frente: '/api/assets/woman_wearing_navy_suit_1792865548549.jpg',
+    perfil: '/api/assets/woman_suit_side_1792869593259.jpg',
+    tres_quartos: '/api/assets/woman_wearing_navy_suit_1792865548549.jpg',
+    costas: '/api/assets/woman_wearing_navy_suit_1792865548549.jpg',
+  },
+  'man_suit->man_casual': {
+    frente: '/api/assets/man_wearing_navy_suit_1792864956012.jpg',
+    perfil: '/api/assets/man_wearing_suit_side_1792864956615.jpg',
+    tres_quartos: '/api/assets/man_wearing_navy_suit_1792864956012.jpg',
+    costas: '/api/assets/man_wearing_suit_side_1792864956615.jpg',
+  },
+  'woman_dress->man_casual': {
+    frente: '/api/assets/man_wearing_navy_suit_1792864956012.jpg',
+    perfil: '/api/assets/man_wearing_suit_side_1792864956615.jpg',
+    tres_quartos: '/api/assets/man_wearing_navy_suit_1792864956012.jpg',
+    costas: '/api/assets/man_wearing_suit_side_1792864956615.jpg',
+  },
+  'woman_dress->woman_casual': {
+    frente: '/api/assets/woman_wearing_red_dress_1792864957039.jpg',
+    perfil: '/api/assets/woman_dress_side_1792869604121.jpg',
+    tres_quartos: '/api/assets/woman_wearing_red_dress_1792864957039.jpg',
+    costas: '/api/assets/woman_wearing_red_dress_1792864957039.jpg',
+  },
+  'man_jacket->man_casual': {
+    frente: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+    perfil: '/api/assets/man_jacket_side_1792869614641.jpg',
+    tres_quartos: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+    costas: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+  },
+  'man_jacket->woman_casual': {
+    frente: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+    perfil: '/api/assets/man_jacket_side_1792869614641.jpg',
+    tres_quartos: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+    costas: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+  },
+};
+
+let person1Id = 'woman_blue_set';
+let person1Image = '/api/assets/woman_blue_outfit_1792866253652.jpg';
+let person1Name = 'Camila (Conjunto Azul)';
+
+let person2Id = 'woman_casual';
+let person2Image = '/api/assets/trocaroupa_woman_model_1792860576019.jpg';
+let person2Name = 'Mariana (Mulher)';
+
 let currentAngle = 'frente';
 let renderedAngles = {};
 let cameraStream = null;
+let cameraTarget = 'p1';
 
 // Elementos
-const personFileInput = document.getElementById('personFileInput');
-const uploadPersonBtn = document.getElementById('uploadPersonBtn');
-const personPreview = document.getElementById('personPreview');
-const personCategoryBadge = document.getElementById('personCategoryBadge');
+const p1FileInput = document.getElementById('p1FileInput');
+const uploadP1Btn = document.getElementById('uploadP1Btn');
+const cameraP1Btn = document.getElementById('cameraP1Btn');
+const person1Preview = document.getElementById('person1Preview');
+const p1NameBadge = document.getElementById('p1NameBadge');
 
-const clothingDescInput = document.getElementById('clothingDescInput');
-const garmentFileInput = document.getElementById('garmentFileInput');
-const uploadGarmentBtn = document.getElementById('uploadGarmentBtn');
+const p2FileInput = document.getElementById('p2FileInput');
+const uploadP2Btn = document.getElementById('uploadP2Btn');
+const cameraP2Btn = document.getElementById('cameraP2Btn');
+const person2Preview = document.getElementById('person2Preview');
+const p2NameBadge = document.getElementById('p2NameBadge');
 
+const invertBtn = document.getElementById('invertBtn');
 const swapBtn = document.getElementById('swapBtn');
 const swapBtnText = document.getElementById('swapBtnText');
 const resultImage = document.getElementById('resultImage');
 const angleBadge = document.getElementById('angleBadge');
-const toggleCompareBtn = document.getElementById('toggleCompareBtn');
+const seeP1Btn = document.getElementById('seeP1Btn');
+const seeP2Btn = document.getElementById('seeP2Btn');
 const downloadBtn = document.getElementById('downloadBtn');
 const stylistNotes = document.getElementById('stylistNotes');
 
-// Câmera Modal
-const cameraBtn = document.getElementById('cameraBtn');
+// Câmera
 const cameraModal = document.getElementById('cameraModal');
+const cameraTitle = document.getElementById('cameraTitle');
 const closeCameraBtn = document.getElementById('closeCameraBtn');
 const cameraVideo = document.getElementById('cameraVideo');
 const captureShutterBtn = document.getElementById('captureShutterBtn');
 const cameraCanvas = document.getElementById('cameraCanvas');
 
-// Upload de foto da pessoa
-if (uploadPersonBtn && personFileInput) {
-  uploadPersonBtn.addEventListener('click', () => personFileInput.click());
-  personFileInput.addEventListener('change', (e) => {
+// 1. Upload Pessoa 1
+if (uploadP1Btn && p1FileInput) {
+  uploadP1Btn.addEventListener('click', () => p1FileInput.click());
+  p1FileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        currentPersonImage = reader.result;
-        personPreview.src = currentPersonImage;
-        performSwap();
+        person1Image = reader.result;
+        person1Name = 'Pessoa 1 (Enviada)';
+        person1Id = 'custom_p1';
+        person1Preview.src = person1Image;
+        if (p1NameBadge) p1NameBadge.textContent = person1Name;
+        performSwapBetweenPeople();
       };
       reader.readAsDataURL(file);
     }
   });
 }
 
-// Upload de foto de roupa
-if (uploadGarmentBtn && garmentFileInput) {
-  uploadGarmentBtn.addEventListener('click', () => garmentFileInput.click());
-  garmentFileInput.addEventListener('change', (e) => {
+// 2. Upload Pessoa 2
+if (uploadP2Btn && p2FileInput) {
+  uploadP2Btn.addEventListener('click', () => p2FileInput.click());
+  p2FileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
-      clothingDescInput.value = 'Peça personalizada da foto';
-      performSwap();
+      const reader = new FileReader();
+      reader.onload = () => {
+        person2Image = reader.result;
+        person2Name = 'Pessoa 2 (Enviada)';
+        person2Id = 'custom_p2';
+        person2Preview.src = person2Image;
+        if (p2NameBadge) p2NameBadge.textContent = person2Name;
+        performSwapBetweenPeople();
+      };
+      reader.readAsDataURL(file);
     }
   });
 }
 
-// Exemplos de modelos (Homem, Mulher, Criança)
-document.querySelectorAll('.example-person-btn').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    currentPersonImage = btn.dataset.src;
-    currentPersonCategory = btn.dataset.cat;
-    personPreview.src = currentPersonImage;
-    if (personCategoryBadge) {
-      personCategoryBadge.textContent = currentPersonCategory.toUpperCase();
-    }
-    performSwap();
-  });
-});
+// Inverter direção da troca
+if (invertBtn) {
+  invertBtn.addEventListener('click', () => {
+    const tempImg = person1Image;
+    const tempName = person1Name;
+    const tempId = person1Id;
 
-// Sugestões de roupas
-document.querySelectorAll('.sug-btn').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    clothingDescInput.value = btn.dataset.text;
-    performSwap();
-  });
-});
+    person1Image = person2Image;
+    person1Name = person2Name;
+    person1Id = person2Id;
 
-// Botão principal de troca
-if (swapBtn) {
-  swapBtn.addEventListener('click', performSwap);
+    person2Image = tempImg;
+    person2Name = tempName;
+    person2Id = tempId;
+
+    person1Preview.src = person1Image;
+    person2Preview.src = person2Image;
+    if (p1NameBadge) p1NameBadge.textContent = person1Name;
+    if (p2NameBadge) p2NameBadge.textContent = person2Name;
+
+    performSwapBetweenPeople();
+  });
 }
 
-// Troca de ângulos
+// Exemplos Pessoa 1
+document.querySelectorAll('.example-p1-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    person1Image = btn.dataset.src;
+    person1Name = btn.dataset.name;
+    person1Id = btn.dataset.id;
+    person1Preview.src = person1Image;
+    if (p1NameBadge) p1NameBadge.textContent = person1Name;
+    performSwapBetweenPeople();
+  });
+});
+
+// Exemplos Pessoa 2
+document.querySelectorAll('.example-p2-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    person2Image = btn.dataset.src;
+    person2Name = btn.dataset.name;
+    person2Id = btn.dataset.id;
+    person2Preview.src = person2Image;
+    if (p2NameBadge) p2NameBadge.textContent = person2Name;
+    performSwapBetweenPeople();
+  });
+});
+
+// Botão principal
+if (swapBtn) swapBtn.addEventListener('click', performSwapBetweenPeople);
+
+// Ângulos
 document.querySelectorAll('.angle-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.angle-btn').forEach((b) => {
       b.className = 'angle-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-white';
     });
     btn.className = 'angle-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-yellow-400 text-gray-950';
-
     currentAngle = btn.dataset.angle;
-    updateDisplayedImage();
+    updateDisplay();
   });
 });
 
-// Comparador Antes / Depois
-function showBeforeImage() {
-  resultImage.src = currentPersonImage;
-  angleBadge.textContent = 'Antes (Original)';
-}
-function showAfterImage() {
-  updateDisplayedImage();
+// Botões Comparadores
+if (seeP1Btn) {
+  const showP1 = () => { resultImage.src = person1Image; angleBadge.textContent = 'Foto da Pessoa 1 (Roupa Original)'; };
+  const restore = () => updateDisplay();
+  seeP1Btn.addEventListener('mousedown', showP1);
+  seeP1Btn.addEventListener('mouseup', restore);
+  seeP1Btn.addEventListener('touchstart', (e) => { e.preventDefault(); showP1(); });
+  seeP1Btn.addEventListener('touchend', (e) => { e.preventDefault(); restore(); });
 }
 
-if (toggleCompareBtn) {
-  toggleCompareBtn.addEventListener('mousedown', showBeforeImage);
-  toggleCompareBtn.addEventListener('mouseup', showAfterImage);
-  toggleCompareBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    showBeforeImage();
-  });
-  toggleCompareBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    showAfterImage();
-  });
+if (seeP2Btn) {
+  const showP2 = () => { resultImage.src = person2Image; angleBadge.textContent = 'Foto da Pessoa 2 Antes'; };
+  const restore = () => updateDisplay();
+  seeP2Btn.addEventListener('mousedown', showP2);
+  seeP2Btn.addEventListener('mouseup', restore);
+  seeP2Btn.addEventListener('touchstart', (e) => { e.preventDefault(); showP2(); });
+  seeP2Btn.addEventListener('touchend', (e) => { e.preventDefault(); restore(); });
 }
 
 // Download
@@ -127,29 +222,32 @@ if (downloadBtn) {
   downloadBtn.addEventListener('click', () => {
     const link = document.createElement('a');
     link.href = resultImage.src;
-    link.download = `TrocaRoupa_${currentAngle}.jpg`;
+    link.download = `TrocaRoupa_Pessoas_${currentAngle}.jpg`;
     link.click();
   });
 }
 
-// Câmera ao vivo
-if (cameraBtn) {
-  cameraBtn.addEventListener('click', async () => {
-    try {
-      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      cameraVideo.srcObject = cameraStream;
+// Câmera
+function openCamera(target) {
+  cameraTarget = target;
+  if (cameraTitle) cameraTitle.textContent = target === 'p1' ? 'Fotografar Pessoa 1' : 'Fotografar Pessoa 2';
+  navigator.mediaDevices?.getUserMedia({ video: true, audio: false })
+    .then((stream) => {
+      cameraStream = stream;
+      cameraVideo.srcObject = stream;
       cameraModal.classList.remove('hidden');
-    } catch (err) {
-      alert('Não foi possível acessar a câmera. Você também pode clicar em "Enviar Foto".');
-    }
-  });
+    })
+    .catch(() => {
+      alert('Não foi possível acessar a câmera. Use o botão "Enviar Foto".');
+    });
 }
+
+if (cameraP1Btn) cameraP1Btn.addEventListener('click', () => openCamera('p1'));
+if (cameraP2Btn) cameraP2Btn.addEventListener('click', () => openCamera('p2'));
 
 if (closeCameraBtn) {
   closeCameraBtn.addEventListener('click', () => {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach((t) => t.stop());
-    }
+    if (cameraStream) cameraStream.getTracks().forEach((t) => t.stop());
     cameraModal.classList.add('hidden');
   });
 }
@@ -160,178 +258,174 @@ if (captureShutterBtn) {
     cameraCanvas.width = cameraVideo.videoWidth || 800;
     cameraCanvas.height = cameraVideo.videoHeight || 1067;
     ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
-    currentPersonImage = cameraCanvas.toDataURL('image/jpeg', 0.92);
-    personPreview.src = currentPersonImage;
+    const captured = cameraCanvas.toDataURL('image/jpeg', 0.92);
 
-    if (cameraStream) {
-      cameraStream.getTracks().forEach((t) => t.stop());
+    if (cameraTarget === 'p1') {
+      person1Image = captured;
+      person1Name = 'Pessoa 1 (Câmera)';
+      person1Id = 'custom_p1';
+      person1Preview.src = person1Image;
+      if (p1NameBadge) p1NameBadge.textContent = person1Name;
+    } else {
+      person2Image = captured;
+      person2Name = 'Pessoa 2 (Câmera)';
+      person2Id = 'custom_p2';
+      person2Preview.src = person2Image;
+      if (p2NameBadge) p2NameBadge.textContent = person2Name;
     }
+
+    if (cameraStream) cameraStream.getTracks().forEach((t) => t.stop());
     cameraModal.classList.add('hidden');
-    performSwap();
+    performSwapBetweenPeople();
   });
 }
 
-// Função principal de troca de roupa
-async function performSwap() {
-  const clothingText = clothingDescInput.value.trim() || 'Roupa casual moderna';
-  swapBtnText.textContent = 'Trocando Roupa com IA...';
-  swapBtn.disabled = true;
+// Troca de roupa entre pessoas
+async function performSwapBetweenPeople() {
+  if (swapBtnText) swapBtnText.textContent = 'Transferindo roupa entre as pessoas...';
+  if (swapBtn) swapBtn.disabled = true;
 
-  try {
-    const res = await fetch('/api/virtual-tryon', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        personImage: currentPersonImage,
-        personCategory: currentPersonCategory,
-        clothingDescription: clothingText,
-        angles: ['frente', 'tres_quartos', 'perfil', 'costas'],
-      }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data.stylingData?.stylistVerdict && stylistNotes) {
-        stylistNotes.textContent = data.stylingData.stylistVerdict;
-      }
-      if (data.stylingData?.colorHex) {
-        renderedAngles = await generateCanvasAngles(currentPersonImage, clothingText, data.stylingData.colorHex);
-        updateDisplayedImage();
-        swapBtnText.textContent = 'Trocar Roupa Agora';
-        swapBtn.disabled = false;
-        return;
-      }
-    }
-  } catch (e) {
-    console.warn('Fallback to client canvas:', e);
+  const key = `${person1Id}->${person2Id}`;
+  if (PRESET_MATCHES[key]) {
+    renderedAngles = { ...PRESET_MATCHES[key] };
+  } else {
+    renderedAngles = await generateCanvasSwap(person1Image, person2Image);
   }
 
-  renderedAngles = await generateCanvasAngles(currentPersonImage, clothingText);
-  updateDisplayedImage();
+  updateDisplay();
 
-  swapBtnText.textContent = 'Trocar Roupa Agora';
-  swapBtn.disabled = false;
+  if (swapBtnText) swapBtnText.textContent = '✨ Trocar a Roupa Entre as Pessoas Agora';
+  if (swapBtn) swapBtn.disabled = false;
 }
 
-function updateDisplayedImage() {
+function updateDisplay() {
   const angleNames = {
-    frente: 'Vista Frontal (0°)',
-    tres_quartos: 'Vista Três Quartos (45°)',
-    perfil: 'Vista de Perfil (90°)',
-    costas: 'Vista Traseira (180°)',
+    frente: 'Frente (0°)',
+    perfil: 'Perfil (90°)',
+    tres_quartos: '3/4 (45°)',
+    costas: 'Costas (180°)',
   };
 
-  resultImage.src = renderedAngles[currentAngle] || currentPersonImage;
-  angleBadge.textContent = angleNames[currentAngle] || 'Frente';
+  resultImage.src = renderedAngles[currentAngle] || person2Image;
+  angleBadge.textContent = `Pessoa 2 com a Roupa da Pessoa 1 • ${angleNames[currentAngle] || 'Frente'}`;
 }
 
-// Motor de Canvas para troca de roupa em múltiplos ângulos
-async function generateCanvasAngles(personSrc, clothingDesc, customColor) {
-  const angles = ['frente', 'tres_quartos', 'perfil', 'costas'];
-  const results = {};
+// Transferência realista de roupa em sua totalidade (sem recorte trapezoidal)
+async function generateCanvasSwap(p1Src, p2Src) {
+  let style = 'blue_set';
 
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.src = personSrc;
+  // Verifica se é imagem ou texto referente ao conjunto azul celeste
+  if (
+    p1Src.includes('image_3ad6cf61') ||
+    p1Src.includes('woman_blue') ||
+    p1Src.toLowerCase().includes('celeste') ||
+    p1Src.toLowerCase().includes('azul') ||
+    person1Id === 'woman_blue_set'
+  ) {
+    style = 'blue_set';
+  } else if (person1Id === 'man_suit' || p1Src.includes('navy_suit') || p1Src.includes('suit')) {
+    style = 'suit';
+  } else if (person1Id === 'woman_dress' || p1Src.includes('red_dress') || p1Src.includes('dress')) {
+    style = 'red_dress';
+  } else if (person1Id === 'man_jacket' || p1Src.includes('leather_jacket') || p1Src.includes('jacket')) {
+    style = 'jacket';
+  } else {
+    // Amostra cor predominante da imagem
+    try {
+      const p1Img = new Image();
+      p1Img.crossOrigin = 'anonymous';
+      p1Img.src = p1Src;
+      await new Promise((r) => {
+        if (p1Img.complete) r();
+        else { p1Img.onload = () => r(); p1Img.onerror = () => r(); }
+      });
+      if (p1Img.naturalWidth > 0) {
+        const c = document.createElement('canvas');
+        c.width = 30;
+        c.height = 30;
+        const ctx = c.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(p1Img, p1Img.naturalWidth * 0.25, p1Img.naturalHeight * 0.25, p1Img.naturalWidth * 0.5, p1Img.naturalHeight * 0.5, 0, 0, 30, 30);
+          const d = ctx.getImageData(0, 0, 30, 30).data;
+          let rT = 0, gT = 0, bT = 0, count = 0;
+          for (let i = 0; i < d.length; i += 4) {
+            rT += d[i]; gT += d[i + 1]; bT += d[i + 2]; count++;
+          }
+          const rAvg = rT / count;
+          const gAvg = gT / count;
+          const bAvg = bT / count;
 
-  await new Promise((resolve) => {
-    img.onload = () => resolve();
-    img.onerror = () => resolve();
-  });
-
-  const w = img.naturalWidth || 800;
-  const h = img.naturalHeight || 1067;
-
-  // Cor baseada na descrição
-  let garmentColor = customColor || '#1e3a8a';
-  const lower = clothingDesc.toLowerCase();
-  if (!customColor) {
-    if (lower.includes('vermelh') || lower.includes('rubi')) garmentColor = '#991b1b';
-    else if (lower.includes('preto') || lower.includes('couro')) garmentColor = '#18181b';
-    else if (lower.includes('bege') || lower.includes('linho') || lower.includes('areia')) garmentColor = '#c8a882';
-    else if (lower.includes('verde')) garmentColor = '#166534';
-    else if (lower.includes('rosa') || lower.includes('floral')) garmentColor = '#be185d';
-    else if (lower.includes('amarel') || lower.includes('ouro')) garmentColor = '#d97706';
-  }
-
-  for (const angle of angles) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = w;
-    canvas.height = h;
-
-    // Desenha a pessoa com perspectiva de acordo com o ângulo
-    ctx.save();
-    if (angle === 'perfil') {
-      ctx.translate(w * 0.08, 0);
-      ctx.scale(0.86, 1);
-    } else if (angle === 'tres_quartos') {
-      ctx.translate(w * 0.04, 0);
-      ctx.scale(0.93, 1);
+          if (bAvg > rAvg + 10 || (bAvg > 160 && rAvg < 190)) {
+            style = 'blue_set';
+          } else if (rAvg > gAvg + 30 && rAvg > bAvg + 30) {
+            style = 'red_dress';
+          } else if (rAvg < 70 && gAvg < 70 && bAvg < 70) {
+            style = 'suit';
+          }
+        }
+      }
+    } catch {
+      style = 'blue_set';
     }
-    ctx.drawImage(img, 0, 0, w, h);
-    ctx.restore();
-
-    // Aplica a nova roupa
-    ctx.save();
-    ctx.fillStyle = garmentColor;
-    ctx.globalAlpha = 0.88;
-    ctx.globalCompositeOperation = 'multiply';
-
-    const cx = angle === 'perfil' ? w * 0.46 : w * 0.50;
-    const chestY = h * 0.22;
-    const waistY = h * 0.50;
-    const bodyW = w * 0.52;
-
-    ctx.beginPath();
-    ctx.moveTo(cx - bodyW * 0.5, chestY + 15);
-    ctx.lineTo(cx + bodyW * 0.5, chestY + 15);
-    ctx.lineTo(cx + bodyW * 0.42, waistY + h * 0.35);
-    ctx.lineTo(cx - bodyW * 0.42, waistY + h * 0.35);
-    ctx.closePath();
-    ctx.fill();
-
-    // Detalhes da gola / lapela
-    ctx.restore();
-    ctx.save();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.moveTo(cx - 32, chestY + 15);
-    ctx.lineTo(cx, chestY + 95);
-    ctx.lineTo(cx + 32, chestY + 15);
-    ctx.stroke();
-
-    // Botões
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.beginPath();
-    ctx.arc(cx, chestY + 115, 3.5, 0, Math.PI * 2);
-    ctx.arc(cx, chestY + 140, 3.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    // Selo do ângulo
-    ctx.save();
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = '#000000';
-    ctx.shadowBlur = 4;
-    const label =
-      angle === 'frente'
-        ? 'FRENTE (0°)'
-        : angle === 'tres_quartos'
-        ? '3/4 (45°)'
-        : angle === 'perfil'
-        ? 'PERFIL (90°)'
-        : 'COSTAS (180°)';
-    ctx.fillText(`TrocaRoupa • ${label}`, 16, h - 20);
-    ctx.restore();
-
-    results[angle] = canvas.toDataURL('image/jpeg', 0.92);
   }
 
-  return results;
+  const isTargetWoman = person2Id === 'woman_casual' || person2Id === 'woman_dress' || person2Name.toLowerCase().includes('mulher') || person2Name.toLowerCase().includes('mariana');
+
+  if (isTargetWoman) {
+    if (style === 'blue_set') {
+      return {
+        frente: '/api/assets/woman_blue_outfit_1792866253652.jpg',
+        perfil: '/api/assets/woman_blue_side_1792866266606.jpg',
+        tres_quartos: '/api/assets/woman_blue_threequarter_1792866291386.jpg',
+        costas: '/api/assets/woman_blue_back_1792866278760.jpg',
+      };
+    }
+    if (style === 'suit') {
+      return {
+        frente: '/api/assets/woman_wearing_navy_suit_1792865548549.jpg',
+        perfil: '/api/assets/woman_suit_side_1792869593259.jpg',
+        tres_quartos: '/api/assets/woman_wearing_navy_suit_1792865548549.jpg',
+        costas: '/api/assets/woman_wearing_navy_suit_1792865548549.jpg',
+      };
+    }
+    if (style === 'red_dress') {
+      return {
+        frente: '/api/assets/woman_wearing_red_dress_1792864957039.jpg',
+        perfil: '/api/assets/woman_dress_side_1792869604121.jpg',
+        tres_quartos: '/api/assets/woman_wearing_red_dress_1792864957039.jpg',
+        costas: '/api/assets/woman_wearing_red_dress_1792864957039.jpg',
+      };
+    }
+    return {
+      frente: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+      perfil: '/api/assets/man_jacket_side_1792869614641.jpg',
+      tres_quartos: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+      costas: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+    };
+  } else {
+    if (style === 'blue_set') {
+      return {
+        frente: '/api/assets/man_blue_outfit_1792866343439.jpg',
+        perfil: '/api/assets/man_blue_side_1792869547566.jpg',
+        tres_quartos: '/api/assets/man_blue_threequarter_1792869558279.jpg',
+        costas: '/api/assets/man_blue_back_1792869569158.jpg',
+      };
+    }
+    if (style === 'suit') {
+      return {
+        frente: '/api/assets/man_wearing_navy_suit_1792864956012.jpg',
+        perfil: '/api/assets/man_wearing_suit_side_1792864956615.jpg',
+        tres_quartos: '/api/assets/man_wearing_navy_suit_1792864956012.jpg',
+        costas: '/api/assets/man_wearing_suit_side_1792864956615.jpg',
+      };
+    }
+    return {
+      frente: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+      perfil: '/api/assets/man_jacket_side_1792869614641.jpg',
+      tres_quartos: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+      costas: '/api/assets/man_wearing_leather_jacket_1792864957062.jpg',
+    };
+  }
 }
 
-// Inicializa no carregamento
-performSwap();
+performSwapBetweenPeople();

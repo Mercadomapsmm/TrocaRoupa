@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 interface TryonRequestBody {
   personImage: string;
+  garmentImage?: string;
   personCategory?: 'homem' | 'mulher' | 'crianca';
   clothingDescription?: string;
   customNotes?: string;
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
     const body: TryonRequestBody = await req.json();
     const {
       personImage,
+      garmentImage,
       personCategory = 'homem',
       clothingDescription = '',
       customNotes = '',
@@ -46,10 +48,10 @@ export async function POST(req: NextRequest) {
 
     // Call Gemini 3.8 Flash to analyze clothing parameters and colors
     let stylingData: any = {
-      colorHex: '#1e3a8a',
+      colorHex: '#1b2a47',
       garmentType: 'completo',
       styleName: requestedClothing,
-      stylistVerdict: `A peça "${requestedClothing}" foi vestida com caimento anatômico excelente. As proporções corporais e a linha dos ombros foram perfeitamente alinhadas.`,
+      stylistVerdict: `A roupa informada foi ajustada anatomicamente no corpo da pessoa com dobras naturais e proporção realista.`,
       fitAccuracy: 98,
       harmonyScore: 9.7,
       angleInsights: {
@@ -61,32 +63,48 @@ export async function POST(req: NextRequest) {
     };
 
     try {
-      const prompt = `Analise este pedido de troca de roupa no app TrocaRoupa:
-ROUPA DESEJADA: "${requestedClothing}"
-CATEGORIA: "${personCategory}" (homem, mulher ou criança)
+      const parts: any[] = [];
 
-Retorne em formato JSON:
+      // If garmentImage is base64, send it to Gemini for vision analysis
+      if (garmentImage && garmentImage.startsWith('data:image/')) {
+        const match = garmentImage.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
+        if (match) {
+          parts.push({
+            inlineData: {
+              mimeType: match[1],
+              data: match[2],
+            },
+          });
+        }
+      }
+
+      const prompt = `Você é o alfaiate e estilista IA do app TrocaRoupa.
+Tarefa: Avaliar a roupa informada ${garmentImage ? '(veja a imagem anexada da roupa)' : `("${requestedClothing}")`} para vestir em uma pessoa (${personCategory}).
+
+Responda em formato JSON:
 {
   "colorHex": "#hexadecimal da cor principal predominante da roupa",
-  "garmentType": "superior" ou "inferior" ou "completo" ou "vestido",
+  "garmentType": "superior" ou "inferior" ou "completo",
   "styleName": "nome elegante resumido da roupa",
-  "stylistVerdict": "breve comentário sobre caimento e elegância",
+  "stylistVerdict": "comentário curto e elegante sobre como a peça veste o corpo da pessoa de forma realista",
   "fitAccuracy": 98,
   "harmonyScore": 9.7,
   "angleInsights": {
-    "frente": "análise vista frontal",
-    "tres_quartos": "análise 45 graus",
+    "frente": "análise da vista frontal",
+    "tres_quartos": "análise em 45 graus",
     "perfil": "análise lateral",
     "costas": "análise traseira"
   }
 }`;
 
+      parts.push({ text: prompt });
+
       const response = await ai.models.generateContent({
         model: 'gemini-3.8-flash',
-        contents: prompt,
+        contents: { parts },
         config: {
           responseMimeType: 'application/json',
-          temperature: 0.5,
+          temperature: 0.4,
         },
       });
 
